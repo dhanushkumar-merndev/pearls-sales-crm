@@ -1,0 +1,307 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-roboto);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-roboto);
+  --font-display: var(--font-playfair);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  /* Pearl Aesthetic & Wellness Clinic -- the sand/gold palette of
+     pearlaesthetic.in. Primary is the site's deep gold (#8A6D4B, 4.8:1 on
+     white); the lighter brand gold (#B38B59) is reserved for rings/accents
+     because white text on it fails AA. */
+  --background: oklch(0.989 0.006 84.6);
+  --foreground: oklch(0.238 0.036 53.9);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.238 0.036 53.9);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.238 0.036 53.9);
+  --primary: oklch(0.555 0.061 70.5);
+  --primary-foreground: oklch(0.99 0.004 85);
+  --secondary: oklch(0.954 0.013 82.4);
+  --secondary-foreground: oklch(0.303 0.039 60.7);
+  --muted: oklch(0.954 0.013 82.4);
+  --muted-foreground: oklch(0.521 0.041 66.7);
+  --accent: oklch(0.935 0.02 82);
+  --accent-foreground: oklch(0.303 0.039 60.7);
+  --destructive: oklch(0.55 0.2 27);
+  --border: oklch(0.913 0.024 82.1);
+  --input: oklch(0.913 0.024 82.1);
+  --ring: oklch(0.663 0.083 71.8);
+  /* Categorical order validated (dataviz validate_palette.js, light on #FFF):
+     brand gold, blue, aqua, violet, rose -- fixed order, never cycled. */
+  --chart-1: #a87a30;
+  --chart-2: #2a78d6;
+  --chart-3: #199e70;
+  --chart-4: #4a3aa7;
+  --chart-5: #d55181;
+  --radius: 0.625rem;
+  --sidebar: oklch(0.262 0.033 73.6);
+  --sidebar-foreground: oklch(0.94 0.015 82);
+  --sidebar-primary: oklch(0.663 0.083 71.8);
+  --sidebar-primary-foreground: oklch(0.2 0.03 60);
+  --sidebar-accent: oklch(0.34 0.04 75);
+  --sidebar-accent-foreground: oklch(0.98 0.006 85);
+  --sidebar-border: oklch(0.36 0.035 75);
+  --sidebar-ring: oklch(0.663 0.083 71.8);
+}
+
+.dark {
+  --background: oklch(0.2 0.02 70);
+  --foreground: oklch(0.95 0.012 82);
+  --card: oklch(0.25 0.025 70);
+  --card-foreground: oklch(0.95 0.012 82);
+  --popover: oklch(0.25 0.025 70);
+  --popover-foreground: oklch(0.95 0.012 82);
+  --primary: oklch(0.72 0.085 72);
+  --primary-foreground: oklch(0.2 0.03 60);
+  --secondary: oklch(0.3 0.03 72);
+  --secondary-foreground: oklch(0.95 0.012 82);
+  --muted: oklch(0.3 0.03 72);
+  --muted-foreground: oklch(0.75 0.03 75);
+  --accent: oklch(0.33 0.035 72);
+  --accent-foreground: oklch(0.95 0.012 82);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.663 0.083 71.8);
+  /* Dark steps validated against the dark card surface (#292014). */
+  --chart-1: #b98a3c;
+  --chart-2: #3987e5;
+  --chart-3: #199e70;
+  --chart-4: #9085e9;
+  --chart-5: #d55181;
+  --sidebar: oklch(0.18 0.02 70);
+  --sidebar-foreground: oklch(0.95 0.012 82);
+  --sidebar-primary: oklch(0.72 0.085 72);
+  --sidebar-primary-foreground: oklch(0.2 0.03 60);
+  --sidebar-accent: oklch(0.3 0.03 72);
+  --sidebar-accent-foreground: oklch(0.95 0.012 82);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.663 0.083 71.8);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+
+/*
+ * Operational screens use the same readable density as a browser at 125%.
+ * The fixed viewport shell below keeps that scale from introducing document
+ * scrolling: navigation and header remain in place while the workspace and
+ * long sidebar menus scroll independently.
+ */
+@layer components {
+  /*
+   * Scrollable body inside a dialog.
+   *
+   * Inputs draw a 3px focus ring OUTSIDE their border box. A bare overflow
+   * container clips that ring against its own edges, so the green focus outline
+   * appears sliced off on whichever field is focused. The area carries a little
+   * inner padding, pulled straight back out with a negative margin, so the ring
+   * has room while the fields stay aligned with the dialog header and footer.
+   */
+  .dialog-scroll {
+    min-height: 0;
+    flex: 1 1 0%;
+    overflow-y: auto;
+    margin-inline: -0.25rem;
+    padding-inline: 0.25rem;
+    padding-block: 0.25rem;
+  }
+}
+
+@media screen {
+  html:has([data-app-viewport]) {
+    font-size: 125%;
+  }
+
+  [data-app-viewport] [data-slot="sidebar-wrapper"] {
+    min-height: 0;
+  }
+
+  body:has([data-app-viewport]) {
+    height: 100svh;
+    overflow: hidden;
+  }
+
+  .sidebar-scrollbar {
+    scrollbar-color: var(--sidebar-border) transparent;
+    scrollbar-width: thin;
+  }
+
+  .sidebar-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .sidebar-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .sidebar-scrollbar::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: var(--sidebar-border);
+  }
+
+  /* Keep modal scrollbars compact and visually consistent across dialogs,
+     sheets, drawers, and any nested scrolling region they contain. */
+  :is(
+    [data-slot="dialog-content"],
+    [data-slot="alert-dialog-content"],
+    [data-slot="sheet-content"],
+    [data-slot="drawer-content"]
+  ),
+  :is(
+    [data-slot="dialog-content"],
+    [data-slot="alert-dialog-content"],
+    [data-slot="sheet-content"],
+    [data-slot="drawer-content"]
+  ) * {
+    scrollbar-color: color-mix(in oklch, var(--primary) 70%, transparent) transparent;
+    scrollbar-width: thin;
+  }
+
+  :is(
+    [data-slot="dialog-content"],
+    [data-slot="alert-dialog-content"],
+    [data-slot="sheet-content"],
+    [data-slot="drawer-content"]
+  )::-webkit-scrollbar,
+  :is(
+    [data-slot="dialog-content"],
+    [data-slot="alert-dialog-content"],
+    [data-slot="sheet-content"],
+    [data-slot="drawer-content"]
+  ) *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  :is(
+    [data-slot="dialog-content"],
+    [data-slot="alert-dialog-content"],
+    [data-slot="sheet-content"],
+    [data-slot="drawer-content"]
+  )::-webkit-scrollbar-track,
+  :is(
+    [data-slot="dialog-content"],
+    [data-slot="alert-dialog-content"],
+    [data-slot="sheet-content"],
+    [data-slot="drawer-content"]
+  ) *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  :is(
+    [data-slot="dialog-content"],
+    [data-slot="alert-dialog-content"],
+    [data-slot="sheet-content"],
+    [data-slot="drawer-content"]
+  )::-webkit-scrollbar-thumb,
+  :is(
+    [data-slot="dialog-content"],
+    [data-slot="alert-dialog-content"],
+    [data-slot="sheet-content"],
+    [data-slot="drawer-content"]
+  ) *::-webkit-scrollbar-thumb {
+    min-height: 2.5rem;
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background: color-mix(in oklch, var(--primary) 70%, transparent);
+    background-clip: padding-box;
+  }
+
+  :is(
+    [data-slot="dialog-content"],
+    [data-slot="alert-dialog-content"],
+    [data-slot="sheet-content"],
+    [data-slot="drawer-content"]
+  )::-webkit-scrollbar-thumb:hover,
+  :is(
+    [data-slot="dialog-content"],
+    [data-slot="alert-dialog-content"],
+    [data-slot="sheet-content"],
+    [data-slot="drawer-content"]
+  ) *::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+    background-clip: padding-box;
+  }
+
+  .login-bg {
+    background-color: var(--background);
+    background-image: url("/login-pattern.svg?v=6");
+    background-repeat: repeat;
+  }
+}
+
+@media print {
+  [data-app-shell], [data-print-hidden] { display: none !important; }
+  body { background: white !important; }
+  /* Printed documents are wrapped in <article>. Chrome drops background colour
+     by default, which would erase the letterhead rule and the primary divider
+     bars, so those are forced on -- text stays black either way. */
+  article, article * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  /* The screen wrapper's padding, width cap and min-height exist so a document
+     is readable in a browser tab. On paper they only shrink the printable area
+     -- the sheet already has the @page margin -- so the document starts at the
+     page margin and uses the full width of the paper. */
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: none !important;
+    min-height: 0 !important;
+  }
+  @page { size: A4; margin: 10mm; }
+}
