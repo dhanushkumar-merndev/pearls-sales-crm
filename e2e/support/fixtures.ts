@@ -95,6 +95,25 @@ export async function lookupPrescriptions(): Promise<{
   };
 }
 
+/** A real sale whose whole prescription was supplied, for receipt checks. */
+export async function lookupFullyDispensedSale(): Promise<string> {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) throw new Error("Receipt verification needs Supabase test fixture credentials.");
+  const db = createClient(url, key, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
+  const { data, error } = await db.from("pharmacy_sales")
+    .select("id,prescriptions!inner(status)")
+    .eq("prescriptions.status", "dispensed")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw new Error(`Could not find a supplied receipt fixture: ${error.message}`);
+  if (!data) throw new Error("No fully dispensed sale exists. Run the all-roles clinical flow first.");
+  return data.id;
+}
+
 /** The newest open visit available for a consultation. */
 export async function lookupOpenVisit(): Promise<string | undefined> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;

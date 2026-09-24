@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { credentialsConfigured, missingCredentials, signIn } from "./support/auth";
+import { lookupPrescriptions } from "./support/fixtures";
 
 /**
  * Every printed document must carry the hospital letterhead the client asked
@@ -19,23 +20,11 @@ test.describe("printed documents", () => {
     // ever shows their own patients.
     await signIn(page, "admin");
 
-    // A prescription only exists once a consultation is completed. Today's
-    // queue is the usual source, but on a quiet day there may be none, so the
-    // pharmacy's pending list is tried before giving up -- both link straight
-    // to the same printed document.
-    await page.goto("/reception");
-    const completed = page.getByRole("row").filter({ hasText: /Completed/i }).first();
-    let prescriptionLink = page.getByRole("button", { name: /^Prescription$/ }).first();
-    if (await completed.count()) {
-      await completed.getByRole("button", { name: /Open|View/ }).first().click();
-      await page.waitForURL(/\/visits\/[0-9a-f-]{36}/, { timeout: 30_000 });
-    }
-    if (!(await prescriptionLink.count())) {
-      await page.goto("/pharmacy");
-      prescriptionLink = page.getByRole("link", { name: /Prescription/ }).first();
-      test.skip(!(await prescriptionLink.count()), "No prescription exists to print today.");
-    }
-    await prescriptionLink.click();
+    // The newest completed visit may deliberately have no medicines. Select
+    // an actual printable prescription instead of skipping on that visit.
+    const { op: prescriptionId } = await lookupPrescriptions();
+    expect(prescriptionId, "The clinical workflow must create a printable prescription").toBeTruthy();
+    await page.goto(`/print/prescription/${prescriptionId}`);
     await expect(page).toHaveURL(/print\/prescription/);
 
     const article = page.locator("article");

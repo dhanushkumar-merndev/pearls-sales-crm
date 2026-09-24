@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { credentialsConfigured, missingCredentials, signIn } from "./support/auth";
-import { lookupPrescriptions } from "./support/fixtures";
+import { lookupFullyDispensedSale, lookupPrescriptions } from "./support/fixtures";
 
 test.skip(!credentialsConfigured, missingCredentials);
 
@@ -32,9 +32,10 @@ test("reception sees each consultant's current load in the dropdown", async ({ p
 });
 
 test("a fully supplied receipt still prints unchanged", async ({ page }) => {
+  const saleId = await lookupFullyDispensedSale();
   await signIn(page, "pharmacy");
-  const response = await page.goto("/print/receipt/8c169dc6-6cc7-41b5-b170-7baabccb7907");
-  test.skip(response?.status() !== 200, "Sale no longer in this database.");
+  const response = await page.goto(`/print/receipt/${saleId}`);
+  expect(response?.status(), "the fully supplied sale receipt is available").toBe(200);
   await expect(page.getByText("Payment Receipt")).toBeVisible();
   // Nothing outstanding on this one, so neither the section nor the slip link
   // should appear.
