@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { createManualLead, addLeadNote, updateLeadStatus, bookLeadAppointment, assignLead } from "./actions";
 import type { Lead, Owner, PatientMatch } from "./schema";
+import type { PartnerOption } from "@/features/referrals/schema";
 
 type Action = (state: ActionState, form: FormData) => Promise<ActionState>;
 function ActionForm({ action, label, children }: { action: Action; label: string; children: React.ReactNode }) {
@@ -35,16 +36,18 @@ function Note({ name = "note", label = "Note" }: { name?: string; label?: string
   const id = useId();
   return <div className="space-y-1.5"><Label htmlFor={id}>{label}</Label><Textarea id={id} name={name} maxLength={4000} rows={3} /></div>;
 }
-export function NewLeadDialog({ owners }: { owners: Owner[] }) {
+export function NewLeadDialog({ owners, partners = [] }: { owners: Owner[]; partners?: PartnerOption[] }) {
   const [open, setOpen] = useState(false);
-  return <Dialog open={open} onOpenChange={setOpen}><DialogTrigger render={<Button className="w-full sm:w-auto" />}>Add enquiry</DialogTrigger><DialogContent className="max-h-[90dvh] overflow-y-auto"><DialogHeader><DialogTitle>New enquiry</DialogTitle><DialogDescription>Add a phone or walk-in enquiry to the sales queue.</DialogDescription></DialogHeader>{open ? <NewLeadForm owners={owners} /> : null}</DialogContent></Dialog>;
+  return <Dialog open={open} onOpenChange={setOpen}><DialogTrigger render={<Button className="w-full sm:w-auto" />}>Add enquiry</DialogTrigger><DialogContent className="max-h-[90dvh] overflow-y-auto"><DialogHeader><DialogTitle>New enquiry</DialogTitle><DialogDescription>Add a phone or walk-in enquiry to the sales queue.</DialogDescription></DialogHeader>{open ? <NewLeadForm owners={owners} partners={partners} /> : null}</DialogContent></Dialog>;
 }
-function NewLeadForm({ owners }: { owners: Owner[] }) {
+function NewLeadForm({ owners, partners }: { owners: Owner[]; partners: PartnerOption[] }) {
   const [key] = useState(() => crypto.randomUUID());
   return <ActionForm action={createManualLead} label="Create enquiry"><input type="hidden" name="idempotencyKey" value={key} />
     <Field label="Full name" name="fullName" required maxLength={160} /><Field label="Mobile number" name="phone" type="tel" required maxLength={40} />
     <div className="grid gap-3 sm:grid-cols-2"><Field label="Email" name="email" type="email" maxLength={254} /><Field label="City" name="city" maxLength={120} /></div>
-    <Field label="Procedure of interest" name="procedureInterest" maxLength={200} /><Note name="message" label="Enquiry details" />
+    <Field label="Procedure of interest" name="procedureInterest" maxLength={200} />
+    {partners.length ? <Choice label="Referred by" name="referralPartnerId" defaultValue="" options={[{ value: "", label: "No referral partner" }, ...partners.map((p) => ({ value: p.id, label: p.name }))]} /> : null}
+    <Note name="message" label="Enquiry details" />
     {owners.length ? <Choice label="Assign to" name="assignTo" options={[{ value: "", label: "Automatic assignment" }, ...owners.map((o) => ({ value: o.id, label: o.full_name }))]} /> : null}
   </ActionForm>;
 }

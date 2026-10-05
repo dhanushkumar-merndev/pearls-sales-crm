@@ -53,7 +53,7 @@ async function collectExport(month: string, includeDocuments: boolean) {
     admin.from("audit_logs").select("id,actor_user_id,action,entity_type,entity_id,metadata,created_at").gte("created_at", from).lt("created_at", to),
     admin.from("medicine_batches").select("id,medicine_id,batch_number,expiry_date,quantity,purchase_price_paise,selling_price_paise,low_stock_threshold,active,created_at,updated_at"),
     admin.from("hospital_settings").select("hospital_name,address,phone,email,prescription_footer,token_footer,digital_prescription_text,updated_at"),
-    admin.from("leads").select("id,source,meta_leadgen_id,meta_form_id,meta_page_id,meta_ad_id,meta_ad_name,meta_campaign_name,platform,full_name,phone_normalized,email,city,procedure_interest,preferred_date,message,extra,status,lost_reason,assigned_to,next_follow_up_at,appointment_at,patient_id,converted_visit_id,created_at,received_at,updated_at").gte("received_at", from).lt("received_at", to),
+    admin.from("leads").select("id,source,meta_leadgen_id,meta_form_id,meta_page_id,meta_ad_id,meta_ad_name,meta_campaign_name,platform,full_name,phone_normalized,email,city,procedure_interest,preferred_date,message,extra,status,lost_reason,referral_partner_id,assigned_to,next_follow_up_at,appointment_at,patient_id,converted_visit_id,created_at,received_at,updated_at").gte("received_at", from).lt("received_at", to),
     admin.from("lead_activities").select("id,lead_id,type,body,from_status,to_status,created_by,created_at").gte("created_at", from).lt("created_at", to),
   ]);
   for (const result of [visitsR, salesR, reportsR, auditR, batchesR, settingsR, leadsR, leadActivitiesR]) if (result.error) throw result.error;

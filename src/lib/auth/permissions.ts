@@ -39,6 +39,8 @@ export const PERMISSIONS = {
   manageIntegrations: ["admin"],
   // Reception turns a booked lead into a real visit when the person arrives.
   viewLeadAppointments: ["admin", "reception"],
+  // Referral partners, package values and incentive payouts are finance.
+  manageReferrals: ["admin"],
 } as const satisfies Record<string, readonly AppRole[]>;
 
 export type Permission = keyof typeof PERMISSIONS;

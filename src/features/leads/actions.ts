@@ -13,7 +13,7 @@ function refreshLeads(id?: string) {
 function failure(error: { code?: string; message?: string }): ActionState {
   if (error.code === "42501") return { ok: false, message: "This lead is no longer assigned to you, or your access has changed. Refresh the page." };
   // Only known staff-facing messages leave the server; never return raw SQL errors.
-  const messages = ["A converted lead is closed.", "Choose an active sales executive.", "That patient does not match this lead's phone number.", "Add a valid 10-digit mobile number before booking.", "Pick an appointment date and time."];
+  const messages = ["A converted lead is closed.", "Choose an active sales executive.", "That patient does not match this lead's phone number.", "Add a valid 10-digit mobile number before booking.", "Pick an appointment date and time.", "Choose an active referral partner."];
   return { ok: false, message: messages.find((message) => error.message === message) ?? "Could not save this lead. Please refresh and try again." };
 }
 export async function createManualLead(_: ActionState, form: FormData): Promise<ActionState> {
@@ -22,7 +22,7 @@ export async function createManualLead(_: ActionState, form: FormData): Promise<
   if (!parsed.success) return { ok: false, message: "Check the enquiry details.", fieldErrors: parsed.error.flatten().fieldErrors };
   const v = parsed.data;
   const db = await createSupabaseServerClient();
-  const { data, error } = await db.rpc("create_manual_lead", { p_full_name: v.fullName, p_phone: v.phone, p_email: v.email || null, p_city: v.city || null, p_procedure_interest: v.procedureInterest || null, p_message: v.message || null, p_assign_to: v.assignTo || null, p_idempotency_key: v.idempotencyKey });
+  const { data, error } = await db.rpc("create_manual_lead", { p_full_name: v.fullName, p_phone: v.phone, p_email: v.email || null, p_city: v.city || null, p_procedure_interest: v.procedureInterest || null, p_message: v.message || null, p_assign_to: v.assignTo || null, p_idempotency_key: v.idempotencyKey, p_referral_partner_id: v.referralPartnerId || null });
   if (error) return failure(error);
   refreshLeads();
   return { ok: true, message: "Enquiry created.", data: { leadId: data } };

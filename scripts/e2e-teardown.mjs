@@ -79,6 +79,7 @@ const patients = await ids(
 );
 const visits = await ids(`select id from public.visits where patient_id = any($1)`, [patients]);
 const leads = await ids(`select id from public.leads where patient_id = any($1) or full_name ilike any($2)`, [patients, PATIENT_MARKERS]);
+const partners = await ids(`select id from public.referral_partners where name ilike any($1)`, [PATIENT_MARKERS]);
 const consultations = await ids(`select id from public.consultations where visit_id = any($1)`, [visits]);
 const prescriptions = await ids(
   `select id from public.prescriptions where visit_id = any($1)`,
@@ -135,6 +136,7 @@ const restores = (
 const plan = [
   ["patients", patients.length],
   ["leads", leads.length],
+  ["referral_partners", partners.length],
   ["visits", visits.length],
   ["consultations", consultations.length],
   ["prescriptions", prescriptions.length],
@@ -195,7 +197,9 @@ await del(`delete from public.consultations where id = any($1)`, [consultations]
 await del(`delete from public.visit_payments where visit_id = any($1)`, [visits]);
 await del(`delete from public.vitals where visit_id = any($1)`, [visits]);
 await del(`delete from public.lead_activities where lead_id = any($1)`, [leads]);
+await del(`delete from public.lead_packages where lead_id = any($1)`, [leads]);
 await del(`delete from public.leads where id = any($1)`, [leads]);
+await del(`delete from public.referral_partners where id = any($1) and not exists (select 1 from public.leads l where l.referral_partner_id = referral_partners.id)`, [partners]);
 // A follow-up requires its previous visit by a table constraint, so delete
 // follow-ups first instead of temporarily writing an invalid null reference.
 await del(`delete from public.visits where id = any($1) and related_previous_visit_id is not null`, [visits]);
@@ -212,7 +216,7 @@ for (const row of restores)
   ]);
 
 const touched = [
-  ...patients, ...visits, ...leads, ...consultations, ...prescriptions,
+  ...patients, ...visits, ...leads, ...partners, ...consultations, ...prescriptions,
   ...prescriptionItems, ...sales, ...saleItems, ...procedureSales,
   ...reports, ...medicines, ...testBatches,
 ];

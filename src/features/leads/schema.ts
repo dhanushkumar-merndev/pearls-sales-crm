@@ -17,7 +17,7 @@ export const manualLeadSchema = z.object({
   phone: z.string().trim().max(40).refine((value) => /^(?:91)?[6-9]\d{9}$/.test(value.replace(/[\s()+-]/g, "")), "Enter a valid Indian mobile number."),
   email: z.union([z.literal(""), z.email().max(254)]).optional(),
   city: optionalText(120), procedureInterest: optionalText(200), message: optionalText(4000),
-  assignTo: databaseIdSchema.or(z.literal("")).optional(), idempotencyKey: databaseIdSchema,
+  assignTo: databaseIdSchema.or(z.literal("")).optional(), referralPartnerId: databaseIdSchema.or(z.literal("")).optional(), idempotencyKey: databaseIdSchema,
 });
 export const leadNoteSchema = leadIdSchema.extend({
   type: z.enum(["note", "call"]), body: optionalText(4000), nextFollowUpAt: optionalDateTime,
@@ -38,6 +38,7 @@ export type Lead = {
   source: string; status: typeof LEAD_STATUSES[number]; assigned_to: string | null; lost_reason: string | null;
   next_follow_up_at: string | null; appointment_at: string | null; received_at: string;
   patient_id: string | null; converted_visit_id: string | null; meta_form_name: string | null;
+  referral_partner_id?: string | null;
 };
 export type Owner = { id: string; full_name: string };
 export type PatientMatch = { patient_id: string; name: string; uhid: string; gender: string };

@@ -14,6 +14,7 @@ import { Table, TableHeader, TableHead, TableRow, TableBody, TableCell } from "@
 import { LEAD_STATUSES, type Lead, type Owner } from "./schema";
 import { NewLeadDialog } from "./forms";
 import { LeadFilters } from "./list-filters";
+import type { PartnerOption } from "@/features/referrals/schema";
 
 export type LeadSearch = { q?: string; status?: string; owner?: string; source?: string; page?: string };
 export async function LeadListPage({ searchParams, mode = "all" }: { searchParams: Promise<LeadSearch>; mode?: "all" | "due" | "booked" }) {
@@ -27,17 +28,17 @@ export async function LeadListPage({ searchParams, mode = "all" }: { searchParam
   else if (mode === "booked") query = query.eq("status", "booked").order("appointment_at");
   else query = query.order("received_at", { ascending: false });
   if (mode === "all" && LEAD_STATUSES.includes(params.status as Lead["status"])) query = query.eq("status", params.status!);
-  if (params.source === "manual" || params.source === "meta") query = query.eq("source", params.source);
+  if (params.source === "manual" || params.source === "meta" || params.source === "referral") query = query.eq("source", params.source);
   if (profile.role === "admin" && params.owner === "unassigned") query = query.is("assigned_to", null);
   else if (profile.role === "admin" && databaseIdSchema.safeParse(params.owner).success) query = query.eq("assigned_to", params.owner!);
   if (q) { const pattern = prefixSearchPattern(q.toLowerCase()); query = query.or(`name_search.like.${pattern},phone_normalized.like.${pattern}`); }
-  const [result, ownersResult] = await Promise.all([query.order("id").range(...rangeFor(page)), profile.role === "admin" ? db.from("profiles").select("id,full_name").eq("role", "sales_executive").eq("status", "active").order("full_name").limit(100) : Promise.resolve({ data: [], error: null })]);
-  if (result.error || ownersResult.error) throw new Error("Leads could not be loaded. Please try again.");
+  const [result, ownersResult, partnersResult] = await Promise.all([query.order("id").range(...rangeFor(page)), profile.role === "admin" ? db.from("profiles").select("id,full_name").eq("role", "sales_executive").eq("status", "active").order("full_name").limit(100) : Promise.resolve({ data: [], error: null }), db.rpc("list_referral_partner_options")]);
+  if (result.error || ownersResult.error || partnersResult.error) throw new Error("Leads could not be loaded. Please try again.");
   const rows = (result.data ?? []) as Lead[];
   const owners = (ownersResult.data ?? []) as Owner[];
   const names = new Map(owners.map((owner) => [owner.id, owner.full_name]));
   const title = mode === "due" ? "Follow-ups due" : mode === "booked" ? "Booked appointments" : profile.role === "admin" ? "Leads" : "My leads";
-  return <div><PageHeader title={title} description="Enquiries, calls and appointments in one place" actions={<NewLeadDialog owners={owners} />} />
+  return <div><PageHeader title={title} description="Enquiries, calls and appointments in one place" actions={<NewLeadDialog owners={owners} partners={(partnersResult.data ?? []) as PartnerOption[]} />} />
     <div className="mb-4 flex flex-wrap gap-2"><Button variant={mode === "all" ? "default" : "outline"} render={<Link href="/leads" />}>All leads</Button><Button variant={mode === "due" ? "default" : "outline"} render={<Link href="/leads/follow-ups" />}>Follow-ups due</Button><Button variant={mode === "booked" ? "default" : "outline"} render={<Link href="/leads/booked" />}>Booked</Button></div>
     <div className="mb-4 flex flex-wrap gap-3"><DebouncedSearchInput initialValue={q} placeholder="Search name or mobile" ariaLabel="Search leads" delay={250} className="min-w-48 flex-1" /><LeadFilters status={params.status} source={params.source} owner={params.owner} owners={owners} showStatus={mode === "all"} isAdmin={profile.role === "admin"} /></div>
     <Card><CardContent className="p-0"><Table><TableHeader><TableRow>{["Name", "Mobile", "Interest", "Source", "Status", ...(profile.role === "admin" ? ["Assigned to"] : []), mode === "booked" ? "Appointment" : "Follow-up", "Action"].map((h) => <TableHead key={h}>{h}</TableHead>)}</TableRow></TableHeader><TableBody>{rows.map((row) => <TableRow key={row.id}>

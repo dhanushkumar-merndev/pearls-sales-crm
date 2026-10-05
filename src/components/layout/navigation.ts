@@ -53,6 +53,7 @@ export const ROLE_NAVIGATION: Record<AppRole, NavigationItem[]> = {
   admin: [
     shared.dashboard, shared.patients,
     { title: "Leads", href: "/leads", icon: "megaphone" },
+    { title: "Referrals", href: "/admin/referrals", icon: "handshake" },
     { title: "Reception", href: "/reception", icon: "concierge-bell" },
     { title: "OP", href: "/op", icon: "stethoscope" },
     { title: "Doctors", href: "/doctor", icon: "user-round-check" },
